@@ -1,14 +1,29 @@
-angular.module('CardsAgainstAssembly')
-  .controller('CardsController', CardsController);
+angular.module('CardsAgainstAssembly', ['ngResource'])
+  .controller('CardsController', CardsController)
 
-function CardsController(){
-  var vm = this;
-  vm.questionsList = [
-    {question: "What is Batman's guilty pleasure?"},
-    {question: "I'm sorry professor, I couldn't complete my homework because _________."},
-    {question: "I get by with a little help from _________."},
-    {question: "_________. It's a trap!"},
-    {question: "The class field trip was completely ruined by _________."},
-    {question: "What's my secret power?"}
-  ]
+  .factory('CardFactory', function($resource){
+    return $resource('http://localhost:3000/api/:id')
+  })
+
+function CardsController(CardFactory){
+ var vm = this;
+    vm.questionsList=[];
+    vm.singleQuestion = singleQuestion;
+
+  function queryCards(){
+   
+    let cardGet = CardFactory.query({}, function(response){
+      console.log(response);
+      vm.questionsList = response;
+    
+
+  })}
+    queryCards()
+ 
+  function singleQuestion (card){
+  vm.singleQuestion = CardFactory.get({id: card._id}, function(response){
+    console.log(response);
+  })
+}
+  
 }
